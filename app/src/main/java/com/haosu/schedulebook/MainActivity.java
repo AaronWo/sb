@@ -1,9 +1,9 @@
 package com.haosu.schedulebook;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,12 +18,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.ScheduleItem;
 
+import org.xutils.DbManager;
+import org.xutils.db.sqlite.WhereBuilder;
+import org.xutils.x;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private ScheduleAdapter adapter;
     private List<ScheduleItem> dataList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +59,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        dataList.add(new ScheduleItem("first one", false));
-        dataList.add(new ScheduleItem("second one", true));
-
-
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ScheduleAdapter(dataList);
@@ -68,6 +72,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new LoadItemsTask(adapter).execute();
     }
 
     @Override
@@ -129,10 +139,19 @@ public class MainActivity extends AppCompatActivity
 
     class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder> {
 
-        private List<ScheduleItem> list ;
+        private List<ScheduleItem> list;
+        private Set<Integer> idSet;
 
-        public ScheduleAdapter(List<ScheduleItem> list){
+        public ScheduleAdapter(List<ScheduleItem> list) {
             this.list = list;
+            idSet = new HashSet<>();
+        }
+
+        public void add(ScheduleItem item) {
+            if (!idSet.contains(item.getId())) {
+                idSet.add(item.getId());
+                list.add(item);
+            }
         }
 
         @Override
@@ -144,9 +163,24 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void onBindViewHolder(ScheduleViewHolder holder, int position) {
+        public void onBindViewHolder(ScheduleViewHolder holder, final int position) {
             holder.textView.setText(list.get(position).getText());
             holder.checkBox.setChecked(list.get(position).isFinish());
+            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    ScheduleItem item = list.get(position);
+                    item.setFinish(isChecked);
+                    try {
+                        DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
+                        DbManager db = x.getDb(daoConfig);
+                        db.saveOrUpdate(item);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
         }
 
         @Override
@@ -161,9 +195,41 @@ public class MainActivity extends AppCompatActivity
 
             public ScheduleViewHolder(View itemView) {
                 super(itemView);
-                checkBox = (CheckBox)itemView.findViewById(R.id.schedule_item_check);
-                textView = (TextView)itemView.findViewById(R.id.schedule_item_text);
+                checkBox = (CheckBox) itemView.findViewById(R.id.schedule_item_check);
+                textView = (TextView) itemView.findViewById(R.id.schedule_item_text);
             }
         }
     }
+
+    class LoadItemsTask extends AsyncTask<Void, Void, Void> {
+
+        ScheduleAdapter adapter;
+
+        public LoadItemsTask(ScheduleAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                DbManager db = x.getDb(XUtil.getDaoConfig());
+                List<ScheduleItem> list = db.findAll(ScheduleItem.class);
+                if (list != null) {
+                    for (ScheduleItem i : list) {
+                        adapter.add(i);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }

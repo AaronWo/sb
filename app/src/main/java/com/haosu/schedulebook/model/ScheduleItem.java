@@ -1,12 +1,23 @@
 package com.haosu.schedulebook.model;
 
+import org.xutils.db.annotation.Column;
+import org.xutils.db.annotation.Table;
+
+import java.io.Serializable;
+
 /**
  * Created by haosu on 2016/4/20.
  */
-public class ScheduleItem {
-    private String id;
+@Table(name = "schedule_item")
+public class ScheduleItem implements Serializable {
+
+    @Column(name = "id", isId = true, autoGen = true)
+    private int id;
+    @Column(name = "date")
     private String date;
+    @Column(name = "text")
     private String text;
+    @Column(name = "finish")
     private boolean isFinish;
 
     public ScheduleItem() {
@@ -19,11 +30,11 @@ public class ScheduleItem {
     }
 
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -50,4 +61,6 @@ public class ScheduleItem {
     public void setFinish(boolean finish) {
         isFinish = finish;
     }
+
+
 }
