@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.haosu.schedulebook.callbacks.ScheduleItemTouchHelperCallback;
 import com.haosu.schedulebook.db.XUtil;
+import com.haosu.schedulebook.listeners.OnMoveAndSwipedListener;
 import com.haosu.schedulebook.model.ScheduleItem;
 import com.haosu.schedulebook.util.DateUtil;
 
@@ -38,6 +41,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ItemTouchHelper itemTouchHelper;
     private RecyclerView recyclerView;
     private ScheduleAdapter adapter;
     private List<ScheduleItem> dataList = new ArrayList<>();
@@ -65,6 +69,10 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ScheduleAdapter(dataList);
         recyclerView.setAdapter(adapter);
+
+        ItemTouchHelper.Callback callback  = new ScheduleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -139,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder> {
+    class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder> implements OnMoveAndSwipedListener {
 
         private List<ScheduleItem> list;
         private Set<Integer> idSet;
@@ -190,6 +198,27 @@ public class MainActivity extends AppCompatActivity
             return list.size();
         }
 
+        @Override
+        public boolean onItemMove(int fromPosition, int toPosition) {
+            return false;
+        }
+
+        @Override
+        public void onItemDismiss(final int position) {
+            if(position<list.size()) {
+                ScheduleItem item = list.get(position);
+                idSet.remove(item.getId());
+                list.remove(position);
+                try {
+                    DbManager db = x.getDb(XUtil.getDaoConfig());
+                    db.delete(item);
+                    this.notifyDataSetChanged();
+                } catch (Exception e) {
+                    Log.e("DB_OPERATION", e.getMessage());
+                }
+            }
+        }
+
         class ScheduleViewHolder extends RecyclerView.ViewHolder {
 
             CheckBox checkBox;
@@ -215,7 +244,6 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(Void... params) {
             try {
                 DbManager db = x.getDb(XUtil.getDaoConfig());
-//                List<ScheduleItem> list = db.findAll(ScheduleItem.class);
                 List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", DateUtil.simpleFormat()).findAll();
                 if (list != null) {
                     for (ScheduleItem i : list) {
