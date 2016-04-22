@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.ScheduleItem;
+import com.haosu.schedulebook.util.DateUtil;
 
 import org.xutils.DbManager;
 import org.xutils.db.sqlite.WhereBuilder;
@@ -166,19 +168,19 @@ public class MainActivity extends AppCompatActivity
         public void onBindViewHolder(ScheduleViewHolder holder, final int position) {
             holder.textView.setText(list.get(position).getText());
             holder.checkBox.setChecked(list.get(position).isFinish());
-            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                public void onClick(View v) {
                     ScheduleItem item = list.get(position);
-                    item.setFinish(isChecked);
+                    CheckBox checkBox = (CheckBox) v;
+                    item.setFinish(checkBox.isChecked());
                     try {
                         DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
                         DbManager db = x.getDb(daoConfig);
                         db.saveOrUpdate(item);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e("DB_OPERATION", e.getMessage());
                     }
-
                 }
             });
         }
@@ -213,7 +215,8 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(Void... params) {
             try {
                 DbManager db = x.getDb(XUtil.getDaoConfig());
-                List<ScheduleItem> list = db.findAll(ScheduleItem.class);
+//                List<ScheduleItem> list = db.findAll(ScheduleItem.class);
+                List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", DateUtil.simpleFormat()).findAll();
                 if (list != null) {
                     for (ScheduleItem i : list) {
                         adapter.add(i);
