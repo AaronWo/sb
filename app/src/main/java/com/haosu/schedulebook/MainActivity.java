@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         adapter = new ScheduleAdapter(dataList);
         recyclerView.setAdapter(adapter);
 
-        ItemTouchHelper.Callback callback  = new ScheduleItemTouchHelperCallback(adapter);
+        ItemTouchHelper.Callback callback = new ScheduleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -131,6 +131,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
+            Intent intent = new Intent(MainActivity.this, StaticActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -205,7 +207,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onItemDismiss(final int position) {
-            if(position<list.size()) {
+            if (position < list.size()) {
                 ScheduleItem item = list.get(position);
                 idSet.remove(item.getId());
                 list.remove(position);
