@@ -29,6 +29,11 @@
             android:name=".CreateSchedulItemActivity"
             android:label="@string/schedule_book_create_title"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".StaticActivity"
+            android:label="@string/static_title"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
