@@ -25,8 +25,23 @@
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/static_line_char"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
         android:layout_margin="16dp"
+        android:layout_weight="1"
         android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray" />
+
+    <lecho.lib.hellocharts.view.ColumnChartView
+        android:id="@+id/chart_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:layout_weight="1"></lecho.lib.hellocharts.view.ColumnChartView>
 
 </LinearLayout>
