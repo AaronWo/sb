@@ -37,11 +37,12 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/darker_gray" />
 
-    <lecho.lib.hellocharts.view.ColumnChartView
-        android:id="@+id/chart_bottom"
+    <lecho.lib.hellocharts.view.PreviewLineChartView
+        android:id="@+id/chart_preview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        android:layout_weight="1"></lecho.lib.hellocharts.view.ColumnChartView>
+        android:layout_weight="1" />
+
 
 </LinearLayout>
