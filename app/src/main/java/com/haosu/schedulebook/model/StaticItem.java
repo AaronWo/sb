@@ -2,10 +2,13 @@ package com.haosu.schedulebook.model;
 
 import com.haosu.schedulebook.util.DateUtil;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by haosu on 2016/4/24.
  */
-public class StaticItem {
+public class StaticItem implements Comparable<StaticItem> {
 
     private String date;
     private int totalCount = 0;
@@ -51,5 +54,15 @@ public class StaticItem {
 
     public void setFinishCount(int finishCount) {
         this.finishCount = finishCount;
+    }
+
+    public static List<StaticItem> sort(List<StaticItem> list) {
+        Collections.sort(list);
+        return list;
+    }
+
+    @Override
+    public int compareTo(StaticItem another) {
+        return this.getDate().compareTo(another.getDate());
     }
 }

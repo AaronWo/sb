@@ -191,7 +191,7 @@ public class StaticActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            initChartData(new ArrayList<>(map.values()));
+            initChartData(StaticItem.sort(new ArrayList<>(map.values())));
         }
     }
 
