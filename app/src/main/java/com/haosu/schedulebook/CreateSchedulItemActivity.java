@@ -1,9 +1,11 @@
 package com.haosu.schedulebook;
 
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.ScheduleItem;
@@ -25,6 +27,7 @@ public class CreateSchedulItemActivity extends BaseActivity {
         setContentView(R.layout.schedule_create_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         editText = (EditText) findViewById(R.id.create_schedule_input);
     }
@@ -45,20 +48,26 @@ public class CreateSchedulItemActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.submit_schedule:
+                if ("".equals(editText.getText().toString().trim())) {
+                    Toast.makeText(this, "please write down your schedule", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 ScheduleItem scheduleItem = new ScheduleItem();
                 scheduleItem.setFinish(false);
-                scheduleItem.setText(editText.getText().toString());
+                scheduleItem.setText(editText.getText().toString().trim());
                 scheduleItem.setDate(DateUtil.simpleFormat());
                 try {
                     DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
                     DbManager db = x.getDb(daoConfig);
                     db.save(scheduleItem);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
                 }
 
                 this.finish();
                 return true;
+            case android.R.id.home:
+                this.finish();
             default:
                 break;
         }

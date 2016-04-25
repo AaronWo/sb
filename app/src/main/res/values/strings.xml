@@ -5,9 +5,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="save">Save</string>
 
     <string name="schedule_book_create_title">create schedule</string>
     <string name="static_title">schedule statics</string>
 
-    <string name="schedule_input_hint">输入你的日程...</string>
+    <string name="schedule_input_hint">please write down one piece of schedule...</string>
 </resources>

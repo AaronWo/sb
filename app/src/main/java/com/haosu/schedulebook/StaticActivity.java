@@ -67,6 +67,7 @@ public class StaticActivity extends BaseActivity {
         new StaticTask().execute();
     }
 
+
     private void initChartData(List<StaticItem> items) {
         List<PointValue> values = new ArrayList<>();
         List<AxisValue> axisValues = new ArrayList<>();
@@ -141,8 +142,13 @@ public class StaticActivity extends BaseActivity {
     private class ViewportListener implements ViewportChangeListener {
 
         @Override
-        public void onViewportChanged(Viewport viewport) {
-            lineChartView.setCurrentViewport(viewport);
+        public void onViewportChanged(final Viewport viewport) {
+            final Viewport v = new Viewport(viewport);
+            v.top++;
+            v.bottom = v.bottom - 1 > 0 ? v.bottom - 1 : 0;
+            lineChartView.setCurrentViewport(v);
+            lineChartView.setMaximumViewport(v);
+            Log.d(this.getClass().getSimpleName(), viewport.top + "  " + viewport.bottom);
         }
     }
 
