@@ -160,21 +160,6 @@ public class MainActivity extends AppCompatActivity
         public void onBindViewHolder(ScheduleViewHolder holder, final int position) {
             holder.textView.setText(list.get(position).getText());
             holder.checkBox.setChecked(list.get(position).isFinish());
-            holder.checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ScheduleItem item = list.get(position);
-                    CheckBox checkBox = (CheckBox) v;
-                    item.setFinish(checkBox.isChecked());
-                    try {
-                        DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
-                        DbManager db = x.getDb(daoConfig);
-                        db.saveOrUpdate(item);
-                    } catch (Exception e) {
-                        Log.e("DB_OPERATION", e.getMessage());
-                    }
-                }
-            });
         }
 
         @Override
@@ -212,6 +197,35 @@ public class MainActivity extends AppCompatActivity
                 super(itemView);
                 checkBox = (CheckBox) itemView.findViewById(R.id.schedule_item_check);
                 textView = (TextView) itemView.findViewById(R.id.schedule_item_text);
+                checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ScheduleItem item = list.get(getAdapterPosition());
+                        item.setFinish(checkBox.isChecked());
+                        try {
+                            DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
+                            DbManager db = x.getDb(daoConfig);
+                            db.saveOrUpdate(item);
+                        } catch (Exception e) {
+                            Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+                        }
+                    }
+                });
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ScheduleItem item = list.get(getAdapterPosition());
+                        checkBox.toggle();
+                        item.setFinish(checkBox.isChecked());
+                        try {
+                            DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
+                            DbManager db = x.getDb(daoConfig);
+                            db.saveOrUpdate(item);
+                        } catch (Exception e) {
+                            Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+                        }
+                    }
+                });
             }
         }
     }
