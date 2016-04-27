@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'org.xutils:xutils:3.3.32'
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    compile files('libs/MiStats_SDK_Client_1_7_0.jar')
 }

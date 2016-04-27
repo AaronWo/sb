@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.StaticItem;
+import com.xiaomi.mistatistic.sdk.MiStatInterface;
 
 import org.xutils.DbManager;
 import org.xutils.x;
@@ -67,6 +68,17 @@ public class StaticActivity extends BaseActivity {
         new StaticTask().execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MiStatInterface.recordPageStart(this, this.getClass().getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MiStatInterface.recordPageEnd();
+    }
 
     private void initChartData(List<StaticItem> items) {
         List<PointValue> values = new ArrayList<>();

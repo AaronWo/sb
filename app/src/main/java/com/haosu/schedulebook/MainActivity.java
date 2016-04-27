@@ -27,6 +27,7 @@ import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.listeners.OnMoveAndSwipedListener;
 import com.haosu.schedulebook.model.ScheduleItem;
 import com.haosu.schedulebook.util.DateUtil;
+import com.xiaomi.mistatistic.sdk.MiStatInterface;
 
 import org.xutils.DbManager;
 import org.xutils.x;
@@ -87,6 +88,18 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         new LoadItemsTask(adapter).execute();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MiStatInterface.recordPageStart(this, this.getClass().getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MiStatInterface.recordPageEnd();
     }
 
     @Override

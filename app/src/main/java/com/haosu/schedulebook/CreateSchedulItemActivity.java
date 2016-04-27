@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.ScheduleItem;
 import com.haosu.schedulebook.util.DateUtil;
+import com.xiaomi.mistatistic.sdk.MiStatInterface;
 
 import org.xutils.x;
 
@@ -33,16 +34,32 @@ public class CreateSchedulItemActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         editText = (EditText) findViewById(R.id.create_schedule_input);
         Bundle bundle = getIntent().getExtras();
-        ScheduleItem item = (ScheduleItem) bundle.getSerializable("item");
-        if (item != null) {
-            scheduleItem = item;
-            editText.setText(item.getText());
+        try {
+            ScheduleItem item = (ScheduleItem) bundle.getSerializable("item");
+            if (item != null) {
+                scheduleItem = item;
+                editText.setText(item.getText());
+            }
+        } catch (Exception e) {
+            Log.v(getClass().getSimpleName(), e.getMessage(), e);
         }
     }
 
     @Override
     public void initData() {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MiStatInterface.recordPageStart(this, this.getClass().getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MiStatInterface.recordPageEnd();
     }
 
     @Override
