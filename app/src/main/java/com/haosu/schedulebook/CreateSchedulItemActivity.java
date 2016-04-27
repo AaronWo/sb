@@ -1,5 +1,7 @@
 package com.haosu.schedulebook;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +23,7 @@ import org.xutils.DbManager;
 public class CreateSchedulItemActivity extends BaseActivity {
 
     private EditText editText;
+    private ScheduleItem scheduleItem;
 
     @Override
     public void initWidgt() {
@@ -28,8 +31,13 @@ public class CreateSchedulItemActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         editText = (EditText) findViewById(R.id.create_schedule_input);
+        Bundle bundle = getIntent().getExtras();
+        ScheduleItem item = (ScheduleItem) bundle.getSerializable("item");
+        if (item != null) {
+            scheduleItem = item;
+            editText.setText(item.getText());
+        }
     }
 
     @Override
@@ -52,14 +60,16 @@ public class CreateSchedulItemActivity extends BaseActivity {
                     Toast.makeText(this, "please write down your schedule", Toast.LENGTH_SHORT).show();
                     return true;
                 }
-                ScheduleItem scheduleItem = new ScheduleItem();
-                scheduleItem.setFinish(false);
+                if (scheduleItem == null) {
+                    scheduleItem = new ScheduleItem();
+                    scheduleItem.setFinish(false);
+                    scheduleItem.setDate(DateUtil.simpleFormat());
+                }
                 scheduleItem.setText(editText.getText().toString().trim());
-                scheduleItem.setDate(DateUtil.simpleFormat());
                 try {
                     DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
                     DbManager db = x.getDb(daoConfig);
-                    db.save(scheduleItem);
+                    db.saveOrUpdate(scheduleItem);
                 } catch (Exception e) {
                     Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
                 }

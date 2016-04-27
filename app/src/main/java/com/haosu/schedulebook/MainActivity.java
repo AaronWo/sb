@@ -145,6 +145,14 @@ public class MainActivity extends AppCompatActivity
             if (!idSet.contains(item.getId())) {
                 idSet.add(item.getId());
                 list.add(item);
+            } else {
+                for (ScheduleItem i : list) {
+                    if (i.getId() == item.getId()) {
+                        i.setText(item.getText());
+                        i.setDate(item.getDate());
+                        break;
+                    }
+                }
             }
         }
 
@@ -197,6 +205,16 @@ public class MainActivity extends AppCompatActivity
                 super(itemView);
                 checkBox = (CheckBox) itemView.findViewById(R.id.schedule_item_check);
                 textView = (TextView) itemView.findViewById(R.id.schedule_item_text);
+                textView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        ScheduleItem item = list.get(getAdapterPosition());
+                        Intent intent = new Intent(MainActivity.this, CreateSchedulItemActivity.class);
+                        intent.putExtra("item", item);
+                        startActivity(intent);
+                        return true;
+                    }
+                });
                 checkBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
