@@ -1,18 +1,12 @@
 package com.haosu.schedulebook;
 
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.model.StaticItem;
 import com.xiaomi.mistatistic.sdk.MiStatInterface;
-
-import org.xutils.DbManager;
-import org.xutils.x;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +80,11 @@ public class StaticActivity extends BaseActivity {
 
         int i = 0;
         for (StaticItem item : items) {
-            values.add(new PointValue(i, (float) item.getFinishCount() / item.getTotalCount()));
+            if (item.getTotalCount() > 0) {
+                values.add(new PointValue(i, (float) item.getFinishCount() / item.getTotalCount()));
+            } else {
+                values.add(new PointValue(i, (float) 0));
+            }
             axisValues.add(new AxisValue(i).setLabel(item.getDate()));
             i++;
         }
@@ -161,38 +159,7 @@ public class StaticActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            try {
-                DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
-                DbManager db = x.getDb(daoConfig);
-                final String sql = "select date, count(*) from schedule_item group by date";
-                Cursor cursor = db.execQuery(sql);
-                while (cursor.moveToNext()) {
-                    String date = cursor.getString(0);
-                    int count = cursor.getInt(1);
-                    StaticItem item = new StaticItem();
-                    item.setDate(date);
-                    item.setTotalCount(count);
-                    map.put(date, item);
-                }
-
-                final String finishSql = "select date, count(*) from schedule_item where finish = 1 group by date";
-                cursor = db.execQuery(finishSql);
-                while (cursor.moveToNext()) {
-                    String date = cursor.getString(0);
-                    int count = cursor.getInt(1);
-                    StaticItem item = null;
-                    if (map.containsKey(date)) {
-                        item = map.get(date);
-                    } else {
-                        item = new StaticItem();
-                    }
-                    item.setDate(date);
-                    item.setFinishCount(count);
-                    map.put(date, item);
-                }
-            } catch (Exception e) {
-                Log.e(this.getClass().getSimpleName(), e.getMessage());
-            }
+            map.putAll(StaticItem.load());
             return null;
         }
 
