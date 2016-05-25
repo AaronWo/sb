@@ -107,8 +107,8 @@ public class StaticItem implements Comparable<StaticItem> {
         if (map == null) {
             map = new HashMap<>();
         }
-        String min = "4000-12-31";
-        String max = "0000-01-01";
+        String min = DateUtil.simpleFormat();
+        String max = DateUtil.simpleFormat();
         for (StaticItem item : map.values()) {
             if (item.fullDate.compareTo(min) < 0) {
                 min = item.fullDate;
@@ -121,9 +121,11 @@ public class StaticItem implements Comparable<StaticItem> {
         Log.i(StaticItem.class.getSimpleName(), "max:" + max);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(DateUtil.stringToDate(min));
-        while (calendar.getTime().compareTo(DateUtil.stringToDate(max)) < 0) {
+
+        while (calendar.getTime().compareTo(DateUtil.stringToDate(max)) <= 0) {
             String key = DateUtil.simpleFormat(calendar.getTime());
             if (!map.containsKey(key)) {
+                Log.d(StaticItem.class.getSimpleName(), "key:" + key);
                 StaticItem item = new StaticItem();
                 item.setDate(key);
                 item.setTotalCount(0);
