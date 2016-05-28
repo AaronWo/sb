@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -171,16 +172,31 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ScheduleViewHolder holder = new ScheduleViewHolder(LayoutInflater.from(
+            View view = LayoutInflater.from(
                     MainActivity.this).inflate(R.layout.schedule_item_layout, parent,
-                    false));
+                    false);
+            TypedValue typedValue = new TypedValue();
+            MainActivity.this.getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+            view.setBackgroundResource(typedValue.resourceId);
+            ScheduleViewHolder holder = new ScheduleViewHolder(view);
             return holder;
         }
 
         @Override
-        public void onBindViewHolder(ScheduleViewHolder holder, final int position) {
+        public void onBindViewHolder(final ScheduleViewHolder holder, final int position) {
             holder.textView.setText(list.get(position).getText());
             holder.checkBox.setChecked(list.get(position).isFinish());
+            holder.itemView.setClickable(true);
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ScheduleItem item = list.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(MainActivity.this, CreateSchedulItemActivity.class);
+                    intent.putExtra("item", item);
+                    startActivity(intent);
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -218,16 +234,6 @@ public class MainActivity extends AppCompatActivity
                 super(itemView);
                 checkBox = (CheckBox) itemView.findViewById(R.id.schedule_item_check);
                 textView = (TextView) itemView.findViewById(R.id.schedule_item_text);
-                textView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        ScheduleItem item = list.get(getAdapterPosition());
-                        Intent intent = new Intent(MainActivity.this, CreateSchedulItemActivity.class);
-                        intent.putExtra("item", item);
-                        startActivity(intent);
-                        return true;
-                    }
-                });
                 checkBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
