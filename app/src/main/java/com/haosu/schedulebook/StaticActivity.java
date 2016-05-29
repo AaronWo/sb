@@ -53,7 +53,6 @@ public class StaticActivity extends BaseActivity {
         previewLineChartView = (PreviewLineChartView) findViewById(R.id.chart_preview);
         previewLineChartView.setLineChartData(previewData);
         previewLineChartView.setViewportChangeListener(new ViewportListener());
-        previewX(false);
 
     }
 
@@ -122,10 +121,16 @@ public class StaticActivity extends BaseActivity {
     }
 
 
-    private void previewX(boolean animate) {
+    private void previewX(boolean animate, int size) {
         Viewport tempViewport = new Viewport(lineChartView.getMaximumViewport());
         float dx = tempViewport.width() / 4;
-        tempViewport.inset(dx, 0);
+        if (size > 7) {
+            dx = tempViewport.width() * 7 / size;
+            tempViewport.set(tempViewport.width() - dx, tempViewport.top, tempViewport.width(), tempViewport.bottom);
+        } else {
+            tempViewport.inset(dx, 0);
+        }
+
         if (animate) {
             previewLineChartView.setCurrentViewportWithAnimation(tempViewport);
         } else {
@@ -166,7 +171,10 @@ public class StaticActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            initChartData(StaticItem.sort(new ArrayList<>(map.values())));
+            List<StaticItem> items = StaticItem.sort(new ArrayList<>(map.values()));
+            initChartData(items);
+            previewX(false, items.size());
+
         }
     }
 
