@@ -80,15 +80,16 @@ public class StaticActivity extends BaseActivity {
         int i = 0;
         for (StaticItem item : items) {
             if (item.getTotalCount() > 0) {
-                values.add(new PointValue(i, (float) item.getFinishCount() / item.getTotalCount()));
+                values.add(new PointValue(i, (float) item.getFinishCount() / item.getTotalCount()).setLabel(String.format("%.2f", (float) item.getFinishCount() / item.getTotalCount())));
             } else {
-                values.add(new PointValue(i, (float) 0));
+                values.add(new PointValue(i, (float) 0).setLabel("0"));
             }
             axisValues.add(new AxisValue(i).setLabel(item.getDate()));
             i++;
         }
         lineChartData = new LineChartData();
         Line line = new Line(values).setColor(ChartUtils.pickColor()).setCubic(false);
+        line.setHasLabels(true);
         List<Line> lines = new ArrayList<>();
         lines.add(line);
         lineChartData.setLines(lines);
@@ -114,6 +115,7 @@ public class StaticActivity extends BaseActivity {
         previewData.getAxisXBottom().setName("History");
         for (int l = 0; l < previewData.getLines().size(); l++) {
             previewData.getLines().get(l).setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
+            previewData.getLines().get(l).setHasLabels(false);
         }
 
         lineChartView.setLineChartData(lineChartData);
