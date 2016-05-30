@@ -103,7 +103,7 @@ public class StaticActivity extends BaseActivity {
 
 
         //设置行为属性，支持缩放、滑动以及平移
-        lineChartView.setInteractive(true);
+        lineChartView.setInteractive(false);
         lineChartView.setZoomType(ZoomType.HORIZONTAL);
         lineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         lineChartView.setLineChartData(lineChartData);
