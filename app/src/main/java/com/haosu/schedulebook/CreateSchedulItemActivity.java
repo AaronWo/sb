@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.haosu.schedulebook.db.XUtil;
@@ -33,6 +36,18 @@ public class CreateSchedulItemActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         editText = (EditText) findViewById(R.id.create_schedule_input);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Log.i(CreateSchedulItemActivity.class.getSimpleName(), "action done");
+                    return save();
+                } else {
+                    Log.i(CreateSchedulItemActivity.class.getSimpleName(), "other action");
+                }
+                return false;
+            }
+        });
         Bundle bundle = getIntent().getExtras();
         try {
             ScheduleItem item = (ScheduleItem) bundle.getSerializable("item");
@@ -73,31 +88,35 @@ public class CreateSchedulItemActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.submit_schedule:
-                if ("".equals(editText.getText().toString().trim())) {
-                    Toast.makeText(this, "please write down your schedule", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                if (scheduleItem == null) {
-                    scheduleItem = new ScheduleItem();
-                    scheduleItem.setFinish(false);
-                    scheduleItem.setDate(DateUtil.simpleFormat());
-                }
-                scheduleItem.setText(editText.getText().toString().trim());
-                try {
-                    DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
-                    DbManager db = x.getDb(daoConfig);
-                    db.saveOrUpdate(scheduleItem);
-                } catch (Exception e) {
-                    Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
-                }
-
-                this.finish();
-                return true;
+                return save();
             case android.R.id.home:
                 this.finish();
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean save() {
+        if ("".equals(editText.getText().toString().trim())) {
+            Toast.makeText(this, "please write down your schedule", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (scheduleItem == null) {
+            scheduleItem = new ScheduleItem();
+            scheduleItem.setFinish(false);
+            scheduleItem.setDate(DateUtil.simpleFormat());
+        }
+        scheduleItem.setText(editText.getText().toString().trim());
+        try {
+            DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
+            DbManager db = x.getDb(daoConfig);
+            db.saveOrUpdate(scheduleItem);
+        } catch (Exception e) {
+            Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+        }
+
+        this.finish();
+        return true;
     }
 }

@@ -25,5 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:hint="@string/schedule_input_hint" />
+        android:hint="@string/schedule_input_hint"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+
 </LinearLayout>
