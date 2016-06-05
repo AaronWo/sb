@@ -31,7 +31,8 @@
         <activity
             android:name=".CreateSchedulItemActivity"
             android:label="@string/schedule_book_create_title"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustPan"></activity>
 
         <activity
             android:name=".StaticActivity"
