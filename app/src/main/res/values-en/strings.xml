@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScheduleBook</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="save">Save</string>
+
+    <string name="schedule_book_create_title">create schedule</string>
+    <string name="static_title">schedule statics</string>
+
+    <string name="schedule_input_hint">please write down one piece of schedule...</string>
+
+    <string name="drawer_title">Schedule Book</string>
+    <string name="drawer_description">Help you to arrange your daily life.</string>
+
+    <string name="drawer_item_statics">Statics</string>
+    <string name="drawer_item_about">About</string>
+</resources>
