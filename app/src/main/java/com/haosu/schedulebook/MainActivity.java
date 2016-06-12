@@ -17,13 +17,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.haosu.schedulebook.callbacks.ScheduleItemTouchHelperCallback;
 import com.haosu.schedulebook.db.XUtil;
 import com.haosu.schedulebook.listeners.OnMoveAndSwipedListener;
 import com.haosu.schedulebook.model.ScheduleItem;
@@ -71,8 +69,17 @@ public class MainActivity extends AppCompatActivity
         adapter = new ScheduleAdapter(dataList);
         recyclerView.setAdapter(adapter);
 
-        ItemTouchHelper.Callback callback = new ScheduleItemTouchHelperCallback(adapter);
-        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                adapter.onItemDismiss(viewHolder.getAdapterPosition());
+            }
+        });
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
