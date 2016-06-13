@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.haosu.schedulebook.db.XUtil;
@@ -179,12 +180,10 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            //TODO
             View view = LayoutInflater.from(
                     MainActivity.this).inflate(R.layout.schedule_item_layout, parent,
                     false);
-            TypedValue typedValue = new TypedValue();
-            MainActivity.this.getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
-            view.setBackgroundResource(typedValue.resourceId);
             ScheduleViewHolder holder = new ScheduleViewHolder(view);
             return holder;
         }

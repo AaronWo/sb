@@ -1,10 +1,13 @@
 package com.haosu.schedulebook;
 
 import android.os.AsyncTask;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
+import com.haosu.schedulebook.listeners.GestureDetectorListener;
 import com.haosu.schedulebook.model.StaticItem;
 import com.xiaomi.mistatistic.sdk.MiStatInterface;
 
@@ -37,6 +40,9 @@ public class StaticActivity extends BaseActivity {
     private LineChartData previewData = new LineChartData();
     private PreviewLineChartView previewLineChartView;
 
+    private GestureDetectorCompat gestureDetector;
+
+
     @Override
     public void initWidgt() {
         setContentView(R.layout.static_layout);
@@ -54,6 +60,13 @@ public class StaticActivity extends BaseActivity {
         previewLineChartView.setLineChartData(previewData);
         previewLineChartView.setViewportChangeListener(new ViewportListener());
 
+        gestureDetector = new GestureDetectorCompat(this, new GestureDetectorListener(this));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        this.gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override

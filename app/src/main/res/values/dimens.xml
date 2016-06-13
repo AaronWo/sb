@@ -6,4 +6,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="touch_raise">16dp</dimen>
+    <dimen name="schedule_item_min_height">64dp</dimen>
+    <dimen name="schedule_item_left_margin">18dp</dimen>
+    <dimen name="schedule_item_text_left_margin">12dp</dimen>
 </resources>

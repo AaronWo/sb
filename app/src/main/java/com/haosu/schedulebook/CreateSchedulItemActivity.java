@@ -2,17 +2,20 @@ package com.haosu.schedulebook;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.haosu.schedulebook.db.XUtil;
+import com.haosu.schedulebook.listeners.GestureDetectorListener;
 import com.haosu.schedulebook.model.ScheduleItem;
 import com.haosu.schedulebook.util.DateUtil;
 import com.xiaomi.mistatistic.sdk.MiStatInterface;
@@ -28,6 +31,8 @@ public class CreateSchedulItemActivity extends BaseActivity {
 
     private EditText editText;
     private ScheduleItem scheduleItem;
+
+    private GestureDetectorCompat gestureDetector;
 
     @Override
     public void initWidgt() {
@@ -58,6 +63,14 @@ public class CreateSchedulItemActivity extends BaseActivity {
         } catch (Exception e) {
             Log.v(getClass().getSimpleName(), e.getMessage(), e);
         }
+
+        gestureDetector = new GestureDetectorCompat(this, new GestureDetectorListener(this));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
