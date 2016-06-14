@@ -153,16 +153,7 @@ public class StaticActivity extends BaseActivity {
         }
         previewLineChartView.setZoomType(ZoomType.HORIZONTAL);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    
 
     private class ViewportListener implements ViewportChangeListener {
 

@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.haosu.schedulebook.db.XUtil;
@@ -44,6 +43,10 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private ScheduleAdapter adapter;
     private List<ScheduleItem> dataList = new ArrayList<>();
+
+    private Snackbar snackbar;
+    private int lastIndex = -1;
+    private ScheduleItem lastItem = null;
 
 
     @Override
@@ -91,6 +94,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        snackbar = Snackbar.make(findViewById(R.id.coordinator_layout), R.string.snack_bar_text, Snackbar.LENGTH_LONG).setAction(R.string.snack_bar_button, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (lastIndex != -1 && lastItem != null && adapter != null) {
+                    adapter.add(lastItem, lastIndex);
+                    try {
+                        DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
+                        DbManager db = x.getDb(daoConfig);
+                        db.saveOrUpdate(lastItem);
+                    } catch (Exception e) {
+                        Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override
@@ -178,6 +198,21 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        public void add(ScheduleItem item, int position) {
+            if (!idSet.contains(item.getId())) {
+                idSet.add(item.getId());
+                list.add(position, item);
+            } else {
+                for (ScheduleItem i : list) {
+                    if (i.getId() == item.getId()) {
+                        i.setText(item.getText());
+                        i.setDate(item.getDate());
+                        break;
+                    }
+                }
+            }
+        }
+
         @Override
         public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             //TODO
@@ -227,6 +262,11 @@ public class MainActivity extends AppCompatActivity
                     this.notifyDataSetChanged();
                 } catch (Exception e) {
                     Log.e("DB_OPERATION", e.getMessage());
+                }
+                lastIndex = position;
+                lastItem = item;
+                if (snackbar != null) {
+                    snackbar.show();
                 }
             }
         }

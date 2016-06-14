@@ -97,18 +97,6 @@ public class CreateSchedulItemActivity extends BaseActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.submit_schedule:
-                return save();
-            case android.R.id.home:
-                this.finish();
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private boolean save() {
         if ("".equals(editText.getText().toString().trim())) {
