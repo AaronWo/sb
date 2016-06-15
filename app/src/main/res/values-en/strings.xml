@@ -21,6 +21,8 @@
 
     <string name="snack_bar_text">remove successfully</string>
     <string name="snack_bar_button">undo</string>
+    <string name="title_activity_about">About</string>
+
 
     <string name="about_text">This is an app helping us arrange our life.\n\n The only thing we care about is what we do today. Every single thing we finished will
     help us achieve the goals.</string>

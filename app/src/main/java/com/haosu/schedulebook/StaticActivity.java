@@ -1,5 +1,6 @@
 package com.haosu.schedulebook;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.Toolbar;
@@ -101,7 +102,7 @@ public class StaticActivity extends BaseActivity {
             i++;
         }
         lineChartData = new LineChartData();
-        Line line = new Line(values).setColor(ChartUtils.pickColor()).setCubic(false);
+        Line line = new Line(values).setColor(Color.parseColor("#f5d3d3")).setCubic(false);
         line.setHasLabels(true);
         List<Line> lines = new ArrayList<>();
         lines.add(line);
@@ -153,7 +154,7 @@ public class StaticActivity extends BaseActivity {
         }
         previewLineChartView.setZoomType(ZoomType.HORIZONTAL);
     }
-    
+
 
     private class ViewportListener implements ViewportChangeListener {
 
