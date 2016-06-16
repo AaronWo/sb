@@ -23,6 +23,6 @@
     <string name="title_activity_about">关于</string>
 
     <string name="about_text">这是一个帮我们管理自己生活的应用。\n\n在这里，我们只关心今天做什么，每一件小事都为我们的目标添砖加瓦。</string>
-    <string name="about_email">联系我：haosuwo@gmail.com</string>
+    <string name="about_email">联系我：schedulebook@163.com</string>
 
 </resources>
