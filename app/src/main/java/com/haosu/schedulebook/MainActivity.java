@@ -32,6 +32,7 @@ import org.xutils.DbManager;
 import org.xutils.x;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,10 +74,12 @@ public class MainActivity extends AppCompatActivity
         adapter = new ScheduleAdapter(dataList);
         recyclerView.setAdapter(adapter);
 
-        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.END) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
+                adapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                adapter.refreshOrder();
+                return true;
             }
 
             @Override
@@ -99,14 +102,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (lastIndex != -1 && lastItem != null && adapter != null) {
+                    lastItem.setId(0);
                     adapter.add(lastItem, lastIndex);
-                    try {
-                        DbManager.DaoConfig daoConfig = XUtil.getDaoConfig();
-                        DbManager db = x.getDb(daoConfig);
-                        db.saveOrUpdate(lastItem);
-                    } catch (Exception e) {
-                        Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
-                    }
+                    adapter.refreshOrder();
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -128,6 +126,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        adapter.refreshOrder();
         MiStatInterface.recordPageEnd();
     }
 
@@ -216,7 +215,6 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            //TODO
             View view = LayoutInflater.from(
                     MainActivity.this).inflate(R.layout.schedule_item_layout, parent,
                     false);
@@ -229,16 +227,16 @@ public class MainActivity extends AppCompatActivity
             holder.textView.setText(list.get(position).getText());
             holder.checkBox.setChecked(list.get(position).isFinish());
             holder.itemView.setClickable(true);
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    ScheduleItem item = list.get(holder.getAdapterPosition());
-                    Intent intent = new Intent(MainActivity.this, CreateSchedulItemActivity.class);
-                    intent.putExtra("item", item);
-                    startActivity(intent);
-                    return true;
-                }
-            });
+//            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    ScheduleItem item = list.get(holder.getAdapterPosition());
+//                    Intent intent = new Intent(MainActivity.this, CreateSchedulItemActivity.class);
+//                    intent.putExtra("item", item);
+//                    startActivity(intent);
+//                    return true;
+//                }
+//            });
         }
 
         @Override
@@ -248,7 +246,21 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onItemMove(int fromPosition, int toPosition) {
-            return false;
+            Collections.swap(list, fromPosition, toPosition);
+            notifyItemMoved(fromPosition, toPosition);
+            return true;
+        }
+
+        public void refreshOrder() {
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).setMyorder(i);
+                try {
+                    DbManager db = x.getDb(XUtil.getDaoConfig());
+                    db.saveOrUpdate(list.get(i));
+                } catch (Exception e) {
+                    Log.e("DB_OPERATION", e.getMessage());
+                }
+            }
         }
 
         @Override
@@ -326,7 +338,7 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(Void... params) {
             try {
                 DbManager db = x.getDb(XUtil.getDaoConfig());
-                List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", DateUtil.simpleFormat()).findAll();
+                List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", DateUtil.simpleFormat()).orderBy("myorder").findAll();
                 if (list != null) {
                     for (ScheduleItem i : list) {
                         adapter.add(i);
@@ -342,6 +354,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             adapter.notifyDataSetChanged();
+            adapter.refreshOrder();
         }
     }
 

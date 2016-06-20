@@ -19,6 +19,8 @@ public class ScheduleItem implements Serializable {
     private String text;
     @Column(name = "finish")
     private boolean isFinish;
+    @Column(name = "myorder")
+    private int myorder;
 
     public ScheduleItem() {
 
@@ -62,5 +64,11 @@ public class ScheduleItem implements Serializable {
         isFinish = finish;
     }
 
+    public int getMyorder() {
+        return myorder;
+    }
 
+    public void setMyorder(int myorder) {
+        this.myorder = myorder;
+    }
 }
