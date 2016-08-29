@@ -9,6 +9,7 @@ import com.xiaomi.mistatistic.sdk.URLStatsRecorder;
 import com.xiaomi.mistatistic.sdk.controller.HttpEventFilter;
 import com.xiaomi.mistatistic.sdk.data.HttpEvent;
 
+import org.json.JSONException;
 import org.xutils.x;
 
 
@@ -41,7 +42,11 @@ public class MyApplication extends Application {
 
             @Override
             public HttpEvent onEvent(HttpEvent event) {
-                Log.d("MI_STAT", event.getUrl() + " result =" + event.toJSON());
+                try {
+                    Log.d("MI_STAT", event.getUrl() + " result =" + event.toJSON());
+                } catch (JSONException e) {
+                    Log.d("MI_STAT", event.getUrl() + " result =" + event.toString());
+                }
                 // returns null if you want to drop this event.
                 // you can modify it here too.
                 return event;
