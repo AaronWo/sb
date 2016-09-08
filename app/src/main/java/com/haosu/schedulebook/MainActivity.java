@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_gallery) {
+        if (id == R.id.tomorrow) {
             Intent intent = new Intent(MainActivity.this, StaticActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_send) {
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class LoadItemsTask extends AsyncTask<Void, Void, Void> {
+    class LoadItemsTask extends AsyncTask<String, Void, Void> {
 
         ScheduleAdapter adapter;
 
@@ -335,10 +335,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
+            String date = null;
+            if (params.length == 1) {
+                date = params[0];
+            } else {
+                date = DateUtil.simpleFormat();
+            }
             try {
                 DbManager db = x.getDb(XUtil.getDaoConfig());
-                List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", DateUtil.simpleFormat()).orderBy("myorder").findAll();
+                List<ScheduleItem> list = db.selector(ScheduleItem.class).where("date", "=", date).orderBy("myorder").findAll();
                 if (list != null) {
                     for (ScheduleItem i : list) {
                         adapter.add(i);

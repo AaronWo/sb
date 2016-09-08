@@ -24,6 +24,9 @@ import org.xutils.x;
 
 import org.xutils.DbManager;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by haosu on 2016/4/20.
  */
@@ -118,7 +121,20 @@ public class CreateSchedulItemActivity extends BaseActivity {
         if (scheduleItem == null) {
             scheduleItem = new ScheduleItem();
             scheduleItem.setFinish(false);
-            scheduleItem.setDate(DateUtil.simpleFormat());
+            Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            Log.i(CreateSchedulItemActivity.class.getSimpleName(), "now hour is: " + hour);
+            if (hour > 20) {
+                // is night, create schedule for tomorrow
+                Date today = new Date();
+                c.setTime(today);
+                c.add(Calendar.DAY_OF_YEAR, +1);
+                String tomorrowStr = DateUtil.simpleFormat(c.getTime());
+                Log.i(CreateSchedulItemActivity.class.getSimpleName(), "tomorrow is: " + tomorrowStr);
+                scheduleItem.setDate(tomorrowStr);
+            } else {
+                scheduleItem.setDate(DateUtil.simpleFormat());
+            }
         }
         scheduleItem.setText(editText.getText().toString().trim());
         try {

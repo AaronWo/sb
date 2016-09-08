@@ -1,6 +1,7 @@
 package com.haosu.schedulebook.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -16,6 +17,20 @@ public class DateUtil {
         }
         return simpleDateFormat.format(new Date());
     }
+
+    /***
+     * format the date of the day near today
+     *
+     * @param gap: if gap ==1, return date for tomorrow, if gap == -1, return date of yesterday
+     * @return date
+     */
+    public static String simpleFormatDateNearToday(int gap) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DAY_OF_YEAR, gap);
+        return simpleFormat(c.getTime());
+    }
+
 
     public static String simpleFormat(Date date) {
         if (simpleDateFormat == null) {
