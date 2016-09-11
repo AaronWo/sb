@@ -49,13 +49,20 @@ public class MainActivity extends AppCompatActivity
     private int lastIndex = -1;
     private ScheduleItem lastItem = null;
 
+    private boolean isTody = true;
+
+    private void toggleDate() {
+        isTody = !isTody;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(DateUtil.simpleFormat());
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.today);
+        toolbar.setSubtitle(DateUtil.simpleFormat());
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -109,6 +116,25 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleDate();
+                if (isTody) {
+                    Log.i(MainActivity.class.getSimpleName(),"date toggle, is today, show today's schedules and date");
+                    new LoadItemsTask(adapter).execute();
+                    toolbar.setTitle(R.string.today);
+                    toolbar.setSubtitle(DateUtil.simpleFormat());
+                } else {
+                    Log.i(MainActivity.class.getSimpleName(),"date toggle, is tomorrow, show tomorrow's schedules and date");
+                    new LoadItemsTask(adapter).execute(DateUtil.simpleFormatDateNearToday(1));
+                    toolbar.setTitle(R.string.tomorrow);
+                    toolbar.setSubtitle(DateUtil.simpleFormatDateNearToday(1));
+                }
+            }
+        });
+
     }
 
     @Override
@@ -160,11 +186,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.tomorrow) {
-            Intent intent = new Intent(MainActivity.this, StaticActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_about) {
             Intent intent = new Intent(MainActivity.this, AboutActivity.class);
             startActivity(intent);
         }
@@ -181,6 +203,11 @@ public class MainActivity extends AppCompatActivity
         public ScheduleAdapter(List<ScheduleItem> list) {
             this.list = list;
             idSet = new HashSet<>();
+        }
+
+        public void clear() {
+            list.clear();
+            idSet.clear();
         }
 
         public void add(ScheduleItem item) {
@@ -336,6 +363,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected Void doInBackground(String... params) {
+            this.adapter.clear();
             String date = null;
             if (params.length == 1) {
                 date = params[0];
